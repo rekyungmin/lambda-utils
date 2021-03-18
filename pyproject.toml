@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "lambda-utils"
+version = "0.1.0"
+description = ""
+authors = ["Kyungmin Lee <rekyungmin@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.812"
+black = "^20.8b1"
+boto3 = "^1.17.30"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
