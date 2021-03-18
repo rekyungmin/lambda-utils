@@ -16,10 +16,10 @@ import io
 from collections.abc import Callable
 from typing import Union, Optional, Any
 
-import boto3
 import boto3.s3.transfer
 
 from lambda_utils import path
+from lambda_utils import _session
 
 PathLike = Union[str, path.PathExt]
 
@@ -31,16 +31,8 @@ class ACL(str, enum.Enum):
 
 
 @functools.lru_cache
-def get_session(**config: Any):
-    if config is None:
-        config = {}
-    return boto3.session.Session(**config)
-
-
-@functools.lru_cache
 def get_client(**config: Any):
-    session = get_session(**config)
-    return session.client("s3")
+    return _session.get_client("s3", **config)
 
 
 def download_object(
