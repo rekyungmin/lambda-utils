@@ -24,7 +24,7 @@ from lambda_utils import _session
 PathLike = Union[str, path.PathExt]
 
 
-class ACL(str, enum.Enum):
+class ACL(enum.Enum):
     PRIVATE = "private"
     PUBLIC_READ = "public-read"
     PUBLIC_READ_AND_WRITE = "public-read-and-write"
