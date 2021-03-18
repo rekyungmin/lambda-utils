@@ -1,8 +1,13 @@
 [tool.poetry]
-name = "lambda-utils"
+name = "lambda-utility"
 version = "0.1.0"
 description = ""
 authors = ["Kyungmin Lee <rekyungmin@gmail.com>"]
+maintainers = ["Kyungmin Lee <rekyungmin@gmail.com>"]
+readme = "README.md"
+homepage = "https://github.com/rekyungmin/lambda-utils"
+repository = "https://github.com/rekyungmin/lambda-utils"
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.7"
