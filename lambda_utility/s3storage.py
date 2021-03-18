@@ -10,16 +10,16 @@ __all__ = (
     "fetch_meta",
 )
 
-import functools
 import enum
+import functools
 import io
 from collections.abc import Callable
 from typing import Union, Optional, Any
 
 import boto3.s3.transfer
 
-from lambda_utility import path
 from lambda_utility import _session
+from lambda_utility import path
 
 PathLike = Union[str, path.PathExt]
 
