@@ -21,6 +21,9 @@ pydantic==1.8.1; python_full_version >= "3.6.1" \
     --hash=sha256:e8bc082afef97c5fd3903d05c6f7bb3a6af9fc18631b4cc9fedeb4720efb0c58 \
     --hash=sha256:e3f8790c47ac42549dc8b045a67b0ca371c7f66e73040d0197ce6172b385e520 \
     --hash=sha256:26cf3cb2e68ec6c0cfcb6293e69fb3450c5fd1ace87f46b64f678b0d29eac4c3
+slack-sdk==3.4.2; python_full_version >= "3.6.0" \
+    --hash=sha256:5e4f89971e8329a81f57e621e1ea273b8eda67797eb431355e384c296be82553 \
+    --hash=sha256:befc1365df93b84eac4592b9a2183411a748ecf662f5c51ce2fa7fdc3f5ee89f
 typing-extensions==3.7.4.3; python_full_version >= "3.6.1" \
     --hash=sha256:dafc7639cde7f1b6e1acc0f457842a83e722ccca8eef5270af2d74792619a89f \
     --hash=sha256:7cb407020f00f7bfc3cb3e7881628838e69d8f3fcab2f64742a5e76b2f841918 \
