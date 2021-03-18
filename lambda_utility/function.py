@@ -8,7 +8,7 @@ __all__ = (
 import enum
 from typing import Any, Optional
 
-from lambda_utils import _session
+from lambda_utility import _session
 
 
 class InvocationType(enum.Enum):

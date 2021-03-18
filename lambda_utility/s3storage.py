@@ -18,8 +18,8 @@ from typing import Union, Optional, Any
 
 import boto3.s3.transfer
 
-from lambda_utils import path
-from lambda_utils import _session
+from lambda_utility import path
+from lambda_utility import _session
 
 PathLike = Union[str, path.PathExt]
 
