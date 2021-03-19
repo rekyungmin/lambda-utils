@@ -176,10 +176,10 @@ def ctx_download_file(
     callback: Optional[Callable] = None,
     config: Optional[boto3.s3.transfer.TransferConfig] = None,
     session_config: Optional[dict[str, Any]] = None,
-) -> Iterator[str]:
+) -> Iterator[path.PathExt]:
     suffix = path.PathExt(key).suffix
     with tempfile.NamedTemporaryFile(suffix=suffix) as f:
-        filename = f.name
+        filename = path.PathExt(f.name)
         download_file(
             bucket,
             key,
