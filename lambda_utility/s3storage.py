@@ -8,18 +8,20 @@ __all__ = (
     "upload_file",
     "fetch_head",
     "fetch_meta",
+    "ctx_download_file",
 )
 
+import contextlib
 import enum
 import functools
 import io
+import tempfile
 from collections.abc import Callable
 from typing import Union, Optional, Any
 
 import boto3.s3.transfer
 
-from lambda_utility import _session
-from lambda_utility import path
+from lambda_utility import _session, path
 
 PathLike = Union[str, path.PathExt]
 
@@ -163,3 +165,28 @@ def fetch_meta(
 ) -> dict[str, Any]:
     head = fetch_head(bucket, key, session_config=session_config, **kwargs)
     return head.get("Metadata", {})
+
+
+@contextlib.contextmanager
+def ctx_download_file(
+    bucket: str,
+    key: PathLike,
+    *,
+    extra: Optional[dict[str, str]] = None,
+    callback: Optional[Callable] = None,
+    config: Optional[boto3.s3.transfer.TransferConfig] = None,
+    session_config: Optional[dict[str, Any]] = None,
+):
+    suffix = path.PathExt(key).suffix
+    with tempfile.NamedTemporaryFile(suffix=suffix) as f:
+        filename = f.name
+        download_file(
+            bucket,
+            key,
+            filename,
+            extra=extra,
+            callback=callback,
+            config=config,
+            session_config=session_config,
+        )
+        yield filename
