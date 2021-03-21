@@ -13,6 +13,13 @@ from lambda_utility.typedefs import PathLike
 
 
 class Unzip:
+    __slots__ = (
+        "zip_path",
+        "zip_ref",
+        "includes",
+        "excludes",
+    )
+
     zip_path: str
     zip_ref: zipfile.ZipFile
     includes: Iterable[Union[re.Pattern, Callable[[str], bool]]]

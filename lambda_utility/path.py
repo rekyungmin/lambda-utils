@@ -6,6 +6,8 @@ import pathlib
 
 
 class PathExt(pathlib.PosixPath):
+    __slots__ = ()
+
     def with_stem(self, stem: str) -> PathExt:
         """
         :example:
