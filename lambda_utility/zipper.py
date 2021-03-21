@@ -58,16 +58,16 @@ class Unzip:
         return list(files)
 
     @functools.lru_cache
-    def get_valid_namelist(self) -> list[str]:
-        return [
+    def get_valid_namelist(self) -> tuple[str, ...]:
+        return tuple(
             zipped_file
             for zipped_file in self.get_namelist()
             if self.check_includes(zipped_file) and not self.check_excludes(zipped_file)
-        ]
+        )
 
     @functools.lru_cache
-    def get_namelist(self) -> list[str]:
-        return self.zip_ref.namelist()
+    def get_namelist(self) -> tuple[str, ...]:
+        return tuple(self.zip_ref.namelist())
 
     def check_excludes(self, filename: PathLike) -> bool:
         filename = str(filename)
