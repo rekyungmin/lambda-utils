@@ -1,8 +1,16 @@
 from __future__ import annotations
 
-__all__ = ("PathExt",)
+__all__ = (
+    "PathExt",
+    "classify_directory",
+)
 
+import collections
 import pathlib
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from lambda_utility.typedefs import PathLike
 
 
 class PathExt(pathlib.PosixPath):
@@ -42,6 +50,26 @@ class PathExt(pathlib.PosixPath):
             'tmp/2x/hello.jpg'
         """
         return self.parent / parent / self.name
+
+
+def classify_directory(*paths: PathLike) -> dict[str, list[PathExt]]:
+    """디렉토리별 path 분류
+
+    디렉토리 depth에 낮은 순서대로 반환한다.
+    :example:
+        >>> classify_directory("poetry.lock", "pyproject.toml", "lambda_utility/path.py", "lambda_utility/function.py")
+        {
+            '.': [PathExt('poetry.lock'), PathExt('pyproject.toml')],
+            'lambda_utility': [PathExt('lambda_utility/path.py'), PathExt('lambda_utility/function.py')],
+        }
+    """
+    result = collections.defaultdict(list)
+    for path in paths:
+        if isinstance(path, str):
+            path = PathExt(path)
+        result[str(path.parent)].append(path)
+
+    return dict(sorted(result.items(), key=lambda x: x[0].count("/")))
 
 
 if __name__ == "__main__":
