@@ -16,8 +16,8 @@ import enum
 import functools
 import io
 import tempfile
-from collections.abc import Callable
-from typing import Optional, Any, Iterator
+from collections.abc import Callable, Iterator
+from typing import Optional, Any
 
 import boto3.s3.transfer
 
