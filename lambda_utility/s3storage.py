@@ -1,191 +1,194 @@
 from __future__ import annotations
 
 __all__ = (
-    "ACL",
+    "DEFAULT_CONFIG",
+    "create_client",
     "download_object",
     "download_file",
     "upload_object",
     "upload_file",
     "fetch_head",
-    "fetch_meta",
     "ctx_download_file",
 )
 
 import contextlib
-import enum
-import functools
-import io
 import tempfile
-from collections.abc import Callable, Iterator
-from typing import Optional, Any
+from typing import Any, Optional, Literal, BinaryIO, Union, AsyncIterator
 
-import boto3.s3.transfer
+import aiobotocore
+import botocore.client
 
-from lambda_utility import _session, path
+from lambda_utility.path import PathExt
+from lambda_utility.schema import (
+    S3GetObjectResponse,
+    S3PutObjectResponse,
+    S3HeadObjectResponse,
+)
 from lambda_utility.typedefs import PathLike
 
-
-class ACL(enum.Enum):
-    PRIVATE = "private"
-    PUBLIC_READ = "public-read"
-    PUBLIC_READ_AND_WRITE = "public-read-and-write"
+DEFAULT_CONFIG = botocore.client.Config(connect_timeout=600, read_timeout=600)
 
 
-@functools.lru_cache
-def get_client(**config: Any):
-    return _session.get_client("s3", **config)
+def create_client(
+    service_name: str,
+    region_name: Optional[str] = None,
+    api_version: Optional[str] = None,
+    use_ssl: bool = True,
+    verify: Optional[Union[bool, str]] = None,
+    endpoint_url: Optional[str] = None,
+    aws_access_key_id: Optional[str] = None,
+    aws_secret_access_key: Optional[str] = None,
+    aws_session_token: Optional[str] = None,
+    config: Optional[botocore.client.Config] = None,
+) -> aiobotocore.session.ClientCreatorContext:
+    session = aiobotocore.get_session()
+    if config:
+        config = DEFAULT_CONFIG.merge(config)
 
-
-def download_object(
-    bucket: str,
-    key: PathLike,
-    *,
-    extra: Optional[dict[str, str]] = None,
-    callback: Optional[Callable] = None,
-    config: Optional[boto3.s3.transfer.TransferConfig] = None,
-    session_config: Optional[dict[str, Any]] = None,
-) -> bytes:
-    if session_config is None:
-        session_config = {}
-
-    stream = io.BytesIO()
-    session = get_client(**session_config)
-    session.download_fileobj(
-        Bucket=bucket,
-        Key=str(key),
-        Fileobj=stream,
-        ExtraArgs=extra,
-        Callback=callback,
-        Config=config,
-    )
-    return stream.getvalue()
-
-
-def download_file(
-    bucket: str,
-    key: PathLike,
-    filename: PathLike,
-    *,
-    extra: Optional[dict[str, str]] = None,
-    callback: Optional[Callable] = None,
-    config: Optional[boto3.s3.transfer.TransferConfig] = None,
-    session_config: Optional[dict[str, Any]] = None,
-) -> bytes:
-    if session_config is None:
-        session_config = {}
-
-    stream = io.BytesIO()
-    session = get_client(**session_config)
-    session.download_file(
-        Bucket=bucket,
-        Key=str(key),
-        Filename=str(filename),
-        ExtraArgs=extra,
-        Callback=callback,
-        Config=config,
-    )
-    return stream.getvalue()
-
-
-def upload_object(
-    bucket: str,
-    key: PathLike,
-    data: bytes,
-    *,
-    acl: ACL = ACL.PUBLIC_READ,
-    extra: Optional[dict[str, str]] = None,
-    callback: Optional[Callable] = None,
-    config: Optional[boto3.s3.transfer.TransferConfig] = None,
-    session_config: Optional[dict[str, Any]] = None,
-) -> None:
-    if extra is None:
-        extra = {}
-    if session_config is None:
-        session_config = {}
-
-    session = get_client(**session_config)
-    stream = io.BytesIO(data)
-    session.upload_fileobj(
-        Bucket=bucket,
-        Key=str(key),
-        Fileobj=stream,
-        ExtraArgs={**extra, "ACL": acl.value},
-        Callback=callback,
-        Config=config,
+    return session.create_client(
+        service_name,
+        region_name=region_name,
+        api_version=api_version,
+        use_ssl=use_ssl,
+        verify=verify,
+        endpoint_url=endpoint_url,
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key,
+        aws_session_token=aws_session_token,
+        config=config,
     )
 
 
-def upload_file(
-    bucket: str,
-    key: PathLike,
-    filename: PathLike,
-    *,
-    acl: ACL = ACL.PUBLIC_READ,
-    extra: Optional[dict[str, str]] = None,
-    callback: Optional[Callable] = None,
-    config: Optional[boto3.s3.transfer.TransferConfig] = None,
-    session_config: Optional[dict[str, Any]] = None,
-) -> None:
-    if extra is None:
-        extra = {}
-    if session_config is None:
-        session_config = {}
-
-    session = get_client(**session_config)
-    session.upload_file(
-        Bucket=bucket,
-        Key=str(key),
-        Filename=str(filename),
-        ExtraArgs={**extra, "ACL": acl.value},
-        Callback=callback,
-        Config=config,
-    )
-
-
-def fetch_head(
+async def download_object(
     bucket: str,
     key: PathLike,
     *,
-    session_config: Optional[dict[str, Any]] = None,
+    client: Optional[aiobotocore.session.ClientCreatorContext] = None,
+    config: Optional[botocore.client.Config] = None,
     **kwargs: Any,
-) -> dict[str, Any]:
-    if session_config is None:
-        session_config = {}
+) -> S3GetObjectResponse:
+    """
+    :exception: botocore.errorfactory.NoSuchBucket
+    :exception: botocore.errorfactory.NoSuchKey
+    """
+    if client is None:
+        client = create_client("s3", config=config)
 
-    session = get_client(**session_config)
-    return session.head_object(Bucket=bucket, Key=str(key), **kwargs)
+    async with client as client_obj:
+        resp = await client_obj.get_object(Bucket=bucket, Key=str(key), **kwargs)
+
+        body = await resp["Body"].read()
+        return S3GetObjectResponse(
+            content_type=resp["ContentType"],
+            content_length=resp["ContentLength"],
+            response_metadata=resp["ResponseMetadata"],
+            metadata=resp["Metadata"],
+            body=body,
+        )
 
 
-def fetch_meta(
+async def download_file(
     bucket: str,
     key: PathLike,
-    session_config: Optional[dict[str, Any]] = None,
-    **kwargs,
-) -> dict[str, Any]:
-    head = fetch_head(bucket, key, session_config=session_config, **kwargs)
-    return head.get("Metadata", {})
-
-
-@contextlib.contextmanager
-def ctx_download_file(
-    bucket: str,
-    key: PathLike,
+    filename: PathLike,
     *,
-    extra: Optional[dict[str, str]] = None,
-    callback: Optional[Callable] = None,
-    config: Optional[boto3.s3.transfer.TransferConfig] = None,
-    session_config: Optional[dict[str, Any]] = None,
-) -> Iterator[path.PathExt]:
-    suffix = path.PathExt(key).suffix
-    with tempfile.NamedTemporaryFile(suffix=suffix) as f:
-        filename = path.PathExt(f.name)
-        download_file(
+    client: Optional[aiobotocore.session.ClientCreatorContext] = None,
+    config: Optional[botocore.client.Config] = None,
+) -> S3GetObjectResponse:
+    data = await download_object(bucket, key, client=client, config=config)
+    with open(filename, "wb") as f:
+        f.write(data.body or b"")
+
+    data.body = None
+    return data
+
+
+ACLType = Literal[
+    "private",
+    "public-read",
+    "public-read-write",
+    "authenticated-read",
+    "aws-exec-read",
+    "bucket-owner-read",
+    "bucket-owner-full-control",
+]
+
+
+async def upload_object(
+    bucket: str,
+    key: PathLike,
+    body: Union[bytes, BinaryIO],
+    *,
+    acl: ACLType = "private",
+    metadata: Optional[dict[str, str]] = None,
+    client: Optional[aiobotocore.session.ClientCreatorContext] = None,
+    config: Optional[botocore.client.Config] = None,
+    **kwargs: Any,
+) -> S3PutObjectResponse:
+    if client is None:
+        client = create_client("s3", config=config)
+
+    if metadata is None:
+        metadata = {}
+
+    async with client as client_obj:
+        resp = await client_obj.put_object(
+            Bucket=bucket, Key=str(key), Body=body, ACL=acl, Metadata=metadata, **kwargs
+        )
+        return S3PutObjectResponse(**resp)
+
+
+async def upload_file(
+    bucket: str,
+    key: PathLike,
+    filepath: PathLike,
+    *,
+    acl: ACLType = "private",
+    metadata: Optional[dict[str, str]] = None,
+    client: Optional[aiobotocore.session.ClientCreatorContext] = None,
+    config: Optional[botocore.client.Config] = None,
+    **kwargs: Any,
+) -> S3PutObjectResponse:
+    with open(filepath, "rb") as f:
+        return await upload_object(
             bucket,
             key,
-            filename,
-            extra=extra,
-            callback=callback,
+            f,
+            acl=acl,
+            metadata=metadata,
+            client=client,
             config=config,
-            session_config=session_config,
+            **kwargs,
         )
-        yield filename
+
+
+async def fetch_head(
+    bucket: str,
+    key: PathLike,
+    *,
+    client: Optional[aiobotocore.session.ClientCreatorContext] = None,
+    config: Optional[botocore.client.Config] = None,
+    **kwargs: Any,
+) -> S3HeadObjectResponse:
+    if client is None:
+        client = create_client("s3", config=config)
+
+    async with client as client_obj:
+        resp = await client_obj.head_object(Bucket=bucket, Key=str(key), **kwargs)
+        return S3HeadObjectResponse(**resp)
+
+
+@contextlib.asynccontextmanager
+async def ctx_download_file(
+    bucket: str,
+    key: PathLike,
+    *,
+    client: Optional[aiobotocore.session.ClientCreatorContext] = None,
+    config: Optional[botocore.client.Config] = None,
+) -> AsyncIterator[tuple[PathExt, S3GetObjectResponse]]:
+    suffix = PathExt(key).suffix
+    with tempfile.NamedTemporaryFile(suffix=suffix) as f:
+        resp = await download_object(bucket, key, client=client, config=config)
+        f.write(resp.body or b"")
+        resp.body = None
+        yield PathExt(f.name), resp

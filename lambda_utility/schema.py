@@ -4,7 +4,7 @@ __all__ = (
     "camelize",
     "pascalize",
     "BaseSchema",
-    "S3ResponseMetadata",
+    "AWSResponseMetadata",
     "S3GetObjectResponse",
     "S3PutObjectResponse",
     "S3HeadObjectResponse",
@@ -45,13 +45,13 @@ class BaseSchema(pydantic.BaseModel):
         allow_population_by_field_name = True
 
 
-class _S3BaseSchema(pydantic.BaseModel):
+class _AWSBaseSchema(pydantic.BaseModel):
     class Config:
         alias_generator = pascalize
         allow_population_by_field_name = True
 
 
-class S3ResponseMetadata(_S3BaseSchema):
+class AWSResponseMetadata(_AWSBaseSchema):
     request_id: str
     host_id: str
     http_status_code: int = pydantic.Field(..., alias="HTTPStatusCode")
@@ -59,33 +59,33 @@ class S3ResponseMetadata(_S3BaseSchema):
     retry_attempts: int
 
 
-class S3GetObjectResponse(_S3BaseSchema):
+class S3GetObjectResponse(_AWSBaseSchema):
     """
     https://botocore.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.get_object
     """
 
-    response_metadata: S3ResponseMetadata
+    response_metadata: AWSResponseMetadata
     metadata: Dict[str, str]
     content_length: int
     content_type: str
     body: Optional[bytes] = None
 
 
-class S3PutObjectResponse(_S3BaseSchema):
+class S3PutObjectResponse(_AWSBaseSchema):
     """
     https://botocore.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.put_object
     """
 
-    response_metadata: S3ResponseMetadata
+    response_metadata: AWSResponseMetadata
     e_tag: str
 
 
-class S3HeadObjectResponse(_S3BaseSchema):
+class S3HeadObjectResponse(_AWSBaseSchema):
     """
     https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.head_object
     """
 
-    response_metadata: S3ResponseMetadata
+    response_metadata: AWSResponseMetadata
     metadata: Dict[str, str]
     content_length: int
     content_type: str
