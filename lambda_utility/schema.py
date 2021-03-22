@@ -68,7 +68,6 @@ class S3GetObjectResponse(_S3BaseSchema):
     metadata: Dict[str, str]
     content_length: int
     content_type: str
-    metadata: Dict[str, str]
     body: Optional[bytes] = None
 
 
@@ -90,7 +89,6 @@ class S3HeadObjectResponse(_S3BaseSchema):
     metadata: Dict[str, str]
     content_length: int
     content_type: str
-    metadata: Dict[str, str]
 
 
 if __name__ == "__main__":
