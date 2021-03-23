@@ -15,7 +15,7 @@ __all__ = (
 
 import base64
 import json
-from typing import Dict, Optional, AnyStr, Any
+from typing import Dict, Optional, AnyStr, Any, cast
 
 import pydantic
 
@@ -50,14 +50,13 @@ class Base64String(str):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v: AnyStr):
+    def validate(cls, v: AnyStr) -> str:
         if not isinstance(v, (str, bytes)):
             raise TypeError("string required")
 
         try:
-            if isinstance(v, str):
-                v = v.encode()
-            binary_text = base64.b64decode(v)
+            v_bytes = v if isinstance(v, bytes) else cast(str, v).encode()
+            binary_text = base64.b64decode(v_bytes)
             text = binary_text.decode()
         except Exception:
             raise ValueError("invalid base64 string format")
@@ -79,9 +78,8 @@ class JsonString:
             raise TypeError("string required")
 
         try:
-            if isinstance(v, bytes):
-                v = v.decode()
-            return json.JSONDecoder().decode(v)
+            v_str = v if isinstance(v, str) else cast(bytes, v).decode()
+            return json.JSONDecoder().decode(v_str)
         except Exception:
             raise ValueError("invalid JSON string format")
 
