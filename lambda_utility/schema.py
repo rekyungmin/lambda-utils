@@ -17,6 +17,7 @@ __all__ = (
     "LambdaInvocationResponse",
     "S3Object",
     "ImageMeta",
+    "PostProcessing",
 )
 
 import base64
@@ -221,6 +222,8 @@ class S3Object(_AWSBaseSchema):
 
 
 class ImageMeta(pydantic.BaseModel):
+    """ for KW """
+
     width: str = pydantic.Field(..., regex=r"^[0-9]+$")
     height: str = pydantic.Field(..., regex=r"^[0-9]+$")
     container: UpperString
@@ -230,6 +233,13 @@ class ImageMeta(pydantic.BaseModel):
 
     def has_alpha(self) -> bool:
         return self.alpha == "YES"
+
+
+class PostProcessing(pydantic.BaseModel):
+    """ for KW """
+
+    type: UpperString
+    output: S3Object
 
 
 if __name__ == "__main__":
