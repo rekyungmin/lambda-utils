@@ -171,8 +171,8 @@ class LambdaInvocationResponse(_AWSBaseSchema):
 
 
 class S3Object(_AWSBaseSchema):
-    bucket_name: str
-    object_key: PathExtField
+    bucket: str
+    key: PathExtField
 
 
 if __name__ == "__main__":
