@@ -7,11 +7,10 @@ __all__ = (
     "LambdaContext",
 )
 
+import pathlib
 from typing import Union, Protocol, Optional
 
-from lambda_utility.path import PathExt
-
-PathLike = Union[str, PathExt]
+PathLike = Union[str, pathlib.PurePath]
 
 
 class CognitoIdentity(Protocol):

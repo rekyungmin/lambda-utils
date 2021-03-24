@@ -7,10 +7,8 @@ __all__ = (
 
 import collections
 import pathlib
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from lambda_utility.typedefs import PathLike
+from lambda_utility.typedefs import PathLike
 
 
 class PathExt(pathlib.PosixPath):
@@ -65,7 +63,7 @@ def classify_directory(*paths: PathLike) -> dict[str, list[PathExt]]:
     """
     result = collections.defaultdict(list)
     for path in paths:
-        if isinstance(path, str):
+        if not isinstance(path, PathExt):
             path = PathExt(path)
         result[str(path.parent)].append(path)
 
