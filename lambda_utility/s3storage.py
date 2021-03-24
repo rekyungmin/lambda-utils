@@ -42,15 +42,15 @@ async def download_object(
 
     async with client as client_obj:
         resp = await client_obj.get_object(Bucket=bucket, Key=str(key), **kwargs)
-
         body = await resp["Body"].read()
-        return S3GetObjectResponse(
-            content_type=resp["ContentType"],
-            content_length=resp["ContentLength"],
-            response_metadata=resp["ResponseMetadata"],
-            metadata=resp["Metadata"],
-            body=body,
-        )
+
+    return S3GetObjectResponse(
+        content_type=resp["ContentType"],
+        content_length=resp["ContentLength"],
+        response_metadata=resp["ResponseMetadata"],
+        metadata=resp["Metadata"],
+        body=body,
+    )
 
 
 async def download_file(
@@ -107,7 +107,6 @@ async def upload_object(
 ) -> S3PutObjectResponse:
     if client is None:
         client = create_client("s3", config=config)
-
     if metadata is None:
         metadata = {}
 
@@ -115,7 +114,8 @@ async def upload_object(
         resp = await client_obj.put_object(
             Bucket=bucket, Key=str(key), Body=body, ACL=acl, Metadata=metadata, **kwargs
         )
-        return S3PutObjectResponse(**resp)
+
+    return S3PutObjectResponse(**resp)
 
 
 async def upload_file(
@@ -155,7 +155,8 @@ async def fetch_head(
 
     async with client as client_obj:
         resp = await client_obj.head_object(Bucket=bucket, Key=str(key), **kwargs)
-        return S3HeadObjectResponse(**resp)
+
+    return S3HeadObjectResponse(**resp)
 
 
 @contextlib.asynccontextmanager
