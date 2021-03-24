@@ -13,9 +13,12 @@ __all__ = (
     "S3HeadObjectResponse",
     "LambdaInvocationResponse",
     "S3Object",
+    "StrBool",
+    "ImageMeta",
 )
 
 import base64
+import enum
 import json
 import pathlib
 from typing import Dict, Optional, AnyStr, Any, cast
@@ -173,6 +176,25 @@ class LambdaInvocationResponse(_AWSBaseSchema):
 class S3Object(_AWSBaseSchema):
     bucket: str
     key: PathExtField
+
+
+class StrBool(str, enum.Enum):
+    YES = "YES"
+    NO = "NO"
+
+    def __str__(self) -> str:
+        return self.value
+
+
+class ImageMeta(pydantic.BaseModel):
+    width: str
+    height: str
+    container: str
+    codec: str
+    alpha: StrBool
+
+    def has_alpha(self) -> bool:
+        return self.alpha == "YES"
 
 
 if __name__ == "__main__":
