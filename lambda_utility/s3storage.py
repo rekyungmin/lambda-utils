@@ -188,7 +188,9 @@ async def ctx_download_file(
     """
     suffix = PathExt(key).suffix
     with tempfile.NamedTemporaryFile(suffix=suffix) as f:
-        resp = await download_object(bucket, key, client=client, config=config, **kwargs)
+        resp = await download_object(
+            bucket, key, client=client, config=config, **kwargs
+        )
         f.write(resp.body or b"")
         resp.body = None
         yield PathExt(f.name), resp
