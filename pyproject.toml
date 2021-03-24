@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lambda-utility"
-version = "0.6.4"
+version = "0.6.5"
 description = ""
 authors = ["Kyungmin Lee <rekyungmin@gmail.com>"]
 maintainers = ["Kyungmin Lee <rekyungmin@gmail.com>"]
