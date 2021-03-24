@@ -5,6 +5,7 @@ __all__ = (
     "pascalize",
     "Base64String",
     "JsonString",
+    "UpperStr",
     "PathExtField",
     "BaseSchema",
     "AWSResponseMetadata",
@@ -91,6 +92,19 @@ class JsonString(str):
             return json.JSONDecoder().decode(v_str)
         except Exception:
             raise ValueError("invalid JSON string format")
+
+
+class UpperStr(str):
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v: str) -> str:
+        if not isinstance(v, str):
+            raise TypeError("string required")
+
+        return v.upper()
 
 
 class PathExtField(PathExt):
@@ -187,10 +201,10 @@ class StrBool(str, enum.Enum):
 
 
 class ImageMeta(pydantic.BaseModel):
-    width: str
-    height: str
-    container: str
-    codec: str
+    width: str = pydantic.Field(..., regex=r"^[0-9]+$")
+    height: str = pydantic.Field(..., regex=r"^[0-9]+$")
+    container: UpperStr
+    codec: UpperStr
     alpha: StrBool
 
     def has_alpha(self) -> bool:
