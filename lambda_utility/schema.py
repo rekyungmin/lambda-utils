@@ -15,6 +15,7 @@ __all__ = (
     "S3PutObjectResponse",
     "S3HeadObjectResponse",
     "LambdaInvocationResponse",
+    "SQSMessageResponse",
     "S3Object",
     "ImageMeta",
     "PostProcessing",
@@ -219,6 +220,23 @@ class LambdaInvocationResponse(_AWSBaseSchema):
     executed_version: Optional[str] = None
     function_error: Optional[str] = None
     log_result: Optional[Base64String] = None
+
+
+class SQSMessageResponse(_AWSBaseSchema):
+    """
+    https://botocore.amazonaws.com/v1/documentation/api/latest/reference/services/sqs.html#SQS.Client.send_message
+    """
+
+    response_metadata: AWSResponseMetadata
+    message_id: str
+    md5_of_message_body: str = pydantic.Field(..., alias="MD5OfMessageBody")
+    md5_of_message_attributes: Optional[str] = pydantic.Field(
+        None, alias="MD5OfMessageAttributes"
+    )
+    md5_of_message_system_attributes: Optional[str] = pydantic.Field(
+        None, alias="MD5OfMessageSystemAttributes"
+    )
+    sequence_number: Optional[str] = None
 
 
 class S3Object(_AWSBaseSchema):
