@@ -89,11 +89,11 @@ class JsonString(str):
         if not isinstance(v, (str, bytes)):
             raise TypeError("string required")
 
+        v_str = v if isinstance(v, str) else cast(bytes, v).decode()
         try:
-            v_str = v if isinstance(v, str) else cast(bytes, v).decode()
             return json.JSONDecoder().decode(v_str)
         except Exception:
-            raise ValueError("invalid JSON string format")
+            return v
 
 
 class JsonDumpString(str):
