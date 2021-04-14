@@ -128,6 +128,7 @@ async def upload_object(
     body: Union[bytes, BinaryIO],
     *,
     acl: ACLType = "private",
+    content_type: str = "binary/octet-stream",
     metadata: Optional[dict] = None,
     client: Optional[aiobotocore.session.ClientCreatorContext] = None,
     config: Optional[botocore.client.Config] = None,
@@ -141,12 +142,16 @@ async def upload_object(
     if metadata is None:
         metadata = {}
 
+    if content_type == "image/jpg":  # common mistake
+        content_type = "image/jpeg"
+
     async with client as client_obj:
         resp = await client_obj.put_object(
             Bucket=bucket,
             Key=str(key),
             Body=body,
             ACL=acl,
+            ContentType=content_type,
             Metadata=_stringfy_metadata(metadata),
             **kwargs,
         )
