@@ -30,6 +30,7 @@ from lambda_utility.typedefs import PathLike
 
 KB = 1024
 DEFAULT_CHUNK_SIZE = 64 * KB
+DEFAULT_CONTENT_TYPE = "binary/octet-stream"
 
 
 def _stringfy_metadata(metadata: dict) -> dict[str, str]:
@@ -128,7 +129,7 @@ async def upload_object(
     body: Union[bytes, BinaryIO],
     *,
     acl: ACLType = "private",
-    content_type: str = "binary/octet-stream",
+    content_type: str = DEFAULT_CONTENT_TYPE,
     metadata: Optional[dict] = None,
     client: Optional[aiobotocore.session.ClientCreatorContext] = None,
     config: Optional[botocore.client.Config] = None,
@@ -165,6 +166,7 @@ async def upload_file(
     filepath: PathLike,
     *,
     acl: ACLType = "private",
+    content_type: str = DEFAULT_CONTENT_TYPE,
     metadata: Optional[dict[str, str]] = None,
     client: Optional[aiobotocore.session.ClientCreatorContext] = None,
     config: Optional[botocore.client.Config] = None,
@@ -179,6 +181,7 @@ async def upload_file(
             key,
             f,
             acl=acl,
+            content_type=content_type,
             metadata=metadata,
             client=client,
             config=config,
