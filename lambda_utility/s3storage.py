@@ -143,6 +143,9 @@ async def upload_object(
     if metadata is None:
         metadata = {}
 
+    if "ContentType" in kwargs:
+        content_type = kwargs.pop("ContentType")
+
     if content_type == "image/jpg":  # common mistake
         content_type = "image/jpeg"
 
