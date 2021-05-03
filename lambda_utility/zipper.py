@@ -10,6 +10,7 @@ import functools
 import io
 import re
 import zipfile
+import pathlib
 from collections.abc import Iterable, Callable
 from types import TracebackType
 from typing import Optional, Type, Union, BinaryIO
@@ -163,22 +164,25 @@ class Unzip:
 
 
 def is_image_sequence(
-    path: PathExt, *, allowed_extension: Optional[str] = None
+    path: PathLike, *, allowed_extension: Optional[str] = None
 ) -> bool:
     """validate image seuqnece file
     {sequence number}.{extension} or {filename}_{sequence number}.{extension}
     :examples:
-        >>> is_image_sequence(PathExt("path/to/cat_001.png"))
+        >>> is_image_sequence("path/to/cat_001.png")
         True
         >>> is_image_sequence(PathExt("path/to/001.png"))
         True
-        >>> is_image_sequence(PathExt("path/to/cat001.png"))
+        >>> is_image_sequence("path/to/cat001.png")
         False
-        >>> is_image_sequence(PathExt("path/to/cat001.webp"))
+        >>> is_image_sequence("path/to/cat_001.webp")
         False
-        >>> is_image_sequence(PathExt("path/to/cat001.webp", allowed_extension="webp"))
+        >>> is_image_sequence("path/to/cat_001.webp", allowed_extension="webp")
         True
     """
+    if not isinstance(path, pathlib.Path):
+        path = pathlib.Path(path)
+
     if allowed_extension is None:
         return bool(
             re.fullmatch(
@@ -190,12 +194,21 @@ def is_image_sequence(
         return bool(re.fullmatch(fr"^(.*_)?(\d+)\.({allowed_extension})$", path.name))
 
 
-def is_dot_file(path: PathExt) -> bool:
+def is_dot_file(path: PathLike) -> bool:
     """validate a dot file (like a system file)
     :examples:
-        >>> is_dot_file(PathExt("path/to/.hello.png"))
+        >>> is_dot_file("path/to/.hello.png")
         True
-        >>> is_dot_file(PathExt("path/to/hello.png"))
+        >>> is_dot_file("path/to/hello.png")
         False
     """
+    if not isinstance(path, pathlib.Path):
+        path = pathlib.Path(path)
+
     return path.name.startswith(".")
+
+
+if __name__ == "__main__":
+    import doctest
+
+    doctest.testmod()
