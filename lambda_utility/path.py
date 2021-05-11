@@ -49,6 +49,37 @@ class PathExt(pathlib.PosixPath):
         """
         return self.parent / parent / self.name
 
+    def replace_root(self, root: str) -> PathExt:
+        """
+        :example:
+            >>> str(PathExt("tmp/hello.jpg").replace_root("contents"))
+            'contents/hello.jpg'
+            >>> str(PathExt("hello.jpg").replace_root("contents"))
+            'contents/hello.jpg'
+        """
+        if len(self.parts) == 1:
+            return self.append_root(root)
+
+        return PathExt(root, *self.parts[1:])
+
+    def append_root(self, root: str) -> PathExt:
+        """
+        :example:
+            >>> str(PathExt("tmp/hello.jpg").append_root("P"))
+            'P/tmp/hello.jpg'
+        """
+        return PathExt(root, *self.parts)
+
+    def append_suffix(self, suffix: str) -> PathExt:
+        """
+        :example:
+            >>> str(PathExt("tmp/hello.jpg").append_suffix(".cef"))
+            'tmp/hello.jpg.cef'
+            >>> str(PathExt("tmp/hello").append_suffix("..cef"))
+            'tmp/hello.jpg.cef'
+        """
+        return self.with_suffix(f"{self.suffix}.{suffix.lstrip('.')}")
+
 
 def classify_directory(*paths: PathLike) -> dict[str, list[PathExt]]:
     """디렉토리별 path 분류
@@ -56,10 +87,7 @@ def classify_directory(*paths: PathLike) -> dict[str, list[PathExt]]:
     디렉토리 depth에 낮은 순서대로 반환한다.
     :example:
         >>> classify_directory("poetry.lock", "pyproject.toml", "lambda_utility/path.py", "lambda_utility/function.py")
-        {
-            '.': [PathExt('poetry.lock'), PathExt('pyproject.toml')],
-            'lambda_utility': [PathExt('lambda_utility/path.py'), PathExt('lambda_utility/function.py')],
-        }
+        {'.': [PathExt('poetry.lock'), PathExt('pyproject.toml')], 'lambda_utility': [PathExt('lambda_utility/path.py'), PathExt('lambda_utility/function.py')]}
     """
     result = collections.defaultdict(list)
     for path in paths:
