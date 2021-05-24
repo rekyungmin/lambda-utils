@@ -2,11 +2,11 @@
 name = "lambda-utility"
 version = "1.4.0"
 description = ""
-authors = ["Kyungmin Lee <rekyungmin@gmail.com>"]
-maintainers = ["Kyungmin Lee <rekyungmin@gmail.com>"]
+authors = ["Pie <pie.pie@kakaoent.com>"]
+maintainers = ["Pie <pie.pie@kakaoent.com>"]
 readme = "README.md"
-homepage = "https://github.com/rekyungmin/lambda-utility"
-repository = "https://github.com/rekyungmin/lambda-utility"
+homepage = "https://github.com/kakao-webtoon/lambda-utility"
+repository = "https://github.com/kakao-webtoon/lambda-utility"
 license = "MIT"
 
 [tool.poetry.dependencies]
