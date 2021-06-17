@@ -1,4 +1,5 @@
 from lambda_utility import function
+from lambda_utility import image
 from lambda_utility import multiprocessing
 from lambda_utility import path
 from lambda_utility import process
