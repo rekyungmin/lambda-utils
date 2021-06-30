@@ -52,7 +52,8 @@ async def invoke(
         except KeyError:
             received_payload = None
 
-        if raise_exception and not is_success_response(received_payload):
-            raise LambdaInvokeError(str(received_payload))  # TODO: 메시지는 변경될 수 있음
+        result = LambdaInvocationResponse(**resp, payload=received_payload)
+        if raise_exception and not is_success_response(result.payload):
+            raise LambdaInvokeError(str(result.payload))  # TODO: 메시지는 변경될 수 있음
 
-        return LambdaInvocationResponse(**resp, payload=received_payload)
+        return result
