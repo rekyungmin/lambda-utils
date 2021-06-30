@@ -4,6 +4,7 @@ __all__ = (
     "timeit_ctx_manager",
     "timeit_decorator",
     "round_number",
+    "LambdaRuntimeError",
     "exception_handler",
 )
 
@@ -70,13 +71,17 @@ def round_number(
 LambdaHandlerT = TypeVar("LambdaHandlerT", bound=Callable[[Any, LambdaContext], Any])
 
 
+class LambdaRuntimeError(Exception):
+    pass
+
+
 def exception_handler(func: LambdaHandlerT) -> LambdaHandlerT:
     @functools.wraps(func)
     def wrapper(event: Any, context: LambdaContext) -> Any:
         try:
             return func(event, context)
         except Exception as e:
-            raise Exception(
+            raise LambdaRuntimeError(
                 f"Request Id: {context.aws_request_id} Event: {event}\n"
                 f"{traceback.format_exc()}"
             ) from e
