@@ -23,7 +23,7 @@ def is_success_response(payload: Any) -> bool:
         return True
 
     # TODO: 헤더 또는 다른 검증된 값을 이용하도록 변경 필요
-    return "errorMessage" in payload
+    return "errorMessage" not in payload
 
 
 async def invoke(
