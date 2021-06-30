@@ -4,13 +4,17 @@ __all__ = (
     "timeit_ctx_manager",
     "timeit_decorator",
     "round_number",
+    "exception_handler",
 )
 
 import contextlib
 import decimal
 import functools
 import time
+import traceback
 from typing import TypeVar, Any, cast, Optional, Callable, Literal
+
+from lambda_utility.typedefs import LambdaContext
 
 
 @contextlib.contextmanager
@@ -61,3 +65,20 @@ def round_number(
             decimal.Decimal(precision), rounding=round_method
         )
     )
+
+
+LambdaHandlerT = TypeVar("LambdaHandlerT", bound=Callable[[Any, LambdaContext], Any])
+
+
+def exception_handler(func: LambdaHandlerT) -> LambdaHandlerT:
+    @functools.wraps(func)
+    def wrapper(event: Any, context: LambdaContext) -> Any:
+        try:
+            return func(event, context)
+        except Exception as e:
+            raise Exception(
+                f"Request Id: {context.aws_request_id} Event: {event}\n"
+                f"{traceback.format_exc()}"
+            ) from e
+
+    return cast(LambdaHandlerT, wrapper)
