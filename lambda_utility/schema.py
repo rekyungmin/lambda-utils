@@ -281,8 +281,8 @@ class ImageMeta(pydantic.BaseModel):
     alpha: BoolString
     width: str = pydantic.Field("0", regex=r"^[0-9]+$")
     height: str = pydantic.Field("0", regex=r"^[0-9]+$")
-    container: UpperString = ""
-    codec: UpperString = ""
+    container: UpperString = UpperString("")
+    codec: UpperString = UpperString("")
     request: JsonDumpString = JsonDumpString("")
 
     def has_alpha(self) -> bool:
