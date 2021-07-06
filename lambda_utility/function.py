@@ -27,7 +27,7 @@ async def invoke(
     *,
     client: Optional[aiobotocore.session.ClientCreatorContext] = None,
     config: Optional[botocore.client.Config] = None,
-    raise_exception: bool = True,
+    raise_function_error: bool = True,
 ) -> LambdaInvocationResponse:
     """Invokes a Lambda function.
     You can invoke a function synchronously (and wait for the response),
@@ -78,7 +78,7 @@ async def invoke(
             received_payload = None
 
         result = LambdaInvocationResponse(**resp, payload=received_payload)
-        if raise_exception and not _is_success_response(
+        if raise_function_error and not _is_success_response(
             resp["ResponseMetadata"]["HTTPHeaders"]
         ):
             raise LambdaFunctionError(str(result.payload))
