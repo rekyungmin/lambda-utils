@@ -3,6 +3,8 @@ from __future__ import annotations
 __all__ = (
     "get_queue_url",
     "send_message",
+    "delete_message",
+    "receive_message",
 )
 
 from typing import Optional, Any
