@@ -11,4 +11,4 @@ from lambda_utility import typedefs
 from lambda_utility import utils
 from lambda_utility import zipper
 
-__version__ = "1.13.0"
+__version__ = "1.13.1"
