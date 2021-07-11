@@ -28,7 +28,7 @@ import base64
 import json
 import logging
 import pathlib
-from typing import Dict, Optional, AnyStr, Any, cast, Union, List
+from typing import Dict, Optional, AnyStr, Any, cast, Union, List, TypeVar, Generic
 
 import pydantic
 import pydantic.generics
@@ -195,6 +195,12 @@ class _AWSBaseSchema(pydantic.BaseModel):
         allow_population_by_field_name = True
 
 
+class _AWSBaseGenericSchema(pydantic.generics.GenericModel):
+    class Config:
+        alias_generator = pascalize
+        allow_population_by_field_name = True
+
+
 class AWSResponseMetadata(_AWSBaseSchema):
     request_id: str
     http_status_code: int = pydantic.Field(..., alias="HTTPStatusCode")
@@ -270,11 +276,14 @@ class SQSMessageResponse(_AWSBaseSchema):
     sequence_number: Optional[str] = None
 
 
-class SQSReceiveMessage(_AWSBaseSchema):
+BodyT = TypeVar("BodyT")
+
+
+class SQSReceiveMessage(_AWSBaseGenericSchema, Generic[BodyT]):
     message_id: str
     receipt_handle: str
     md5_of_body: str = pydantic.Field(..., alias="MD5OfBody")
-    body: str
+    body: Union[BodyT, str]
     attributes: Optional[Dict[str, Any]]
     md5_of_message_attributes: Optional[str] = pydantic.Field(
         None, alias="MD5OfMessageAttributes"
