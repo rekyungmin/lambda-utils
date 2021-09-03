@@ -8,7 +8,7 @@ __all__ = (
 import collections
 import pathlib
 
-from lambda_utility.typedefs import PathLike
+from lambda_utility.typedefs import StrPath
 
 
 class PathExt(pathlib.PosixPath):
@@ -81,7 +81,7 @@ class PathExt(pathlib.PosixPath):
         return self.with_suffix(f"{self.suffix}.{suffix.lstrip('.')}")
 
 
-def classify_directory(*paths: PathLike) -> dict[str, list[PathExt]]:
+def classify_directory(*paths: StrPath) -> dict[str, list[PathExt]]:
     """디렉토리별 path 분류
 
     디렉토리 depth에 낮은 순서대로 반환한다.

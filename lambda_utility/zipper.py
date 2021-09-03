@@ -15,7 +15,7 @@ from types import TracebackType
 from typing import Optional, Type, Union, BinaryIO, Iterable, Callable
 
 from lambda_utility.path import PathExt
-from lambda_utility.typedefs import PathLike
+from lambda_utility.typedefs import StrPath
 
 
 class Unzip:
@@ -25,14 +25,14 @@ class Unzip:
         "includes",
         "excludes",
     )
-    zip_path: Union[BinaryIO, PathLike]
+    zip_path: Union[BinaryIO, StrPath]
     zip_ref: zipfile.ZipFile
     includes: Iterable[Union[re.Pattern, Callable[[PathExt], bool]]]
     excludes: Iterable[Union[re.Pattern, Callable[[PathExt], bool]]]
 
     def __init__(
         self,
-        zip_path: Union[BinaryIO, PathLike],
+        zip_path: Union[BinaryIO, StrPath],
         *,
         includes: Optional[
             Iterable[Union[re.Pattern, Callable[[PathExt], bool]]]
@@ -60,8 +60,8 @@ class Unzip:
     def __call__(
         self,
         *,
-        path: Optional[PathLike] = None,
-        files: Optional[Iterable[PathLike]] = None,
+        path: Optional[StrPath] = None,
+        files: Optional[Iterable[StrPath]] = None,
         pwd: Optional[bytes] = None,
     ) -> list[str]:
         """
@@ -77,8 +77,8 @@ class Unzip:
     def extract_all(
         self,
         *,
-        path: Optional[PathLike] = None,
-        files: Optional[Iterable[PathLike]] = None,
+        path: Optional[StrPath] = None,
+        files: Optional[Iterable[StrPath]] = None,
         pwd: Optional[bytes] = None,
     ) -> list[str]:
         if path is not None:
@@ -93,7 +93,7 @@ class Unzip:
 
     def extract_all_in_memory(
         self,
-        files: Optional[Iterable[PathLike]] = None,
+        files: Optional[Iterable[StrPath]] = None,
         pwd: Optional[bytes] = None,
     ) -> Iterable[tuple[str, bytes]]:
         if files is None:
@@ -117,7 +117,7 @@ class Unzip:
     def get_infolist(self) -> tuple[zipfile.ZipInfo, ...]:
         return tuple(self.zip_ref.infolist())
 
-    def check_excludes(self, path: PathLike) -> bool:
+    def check_excludes(self, path: StrPath) -> bool:
         path = PathExt(path)
         for exclude in self.excludes:
             if isinstance(exclude, re.Pattern):
@@ -128,7 +128,7 @@ class Unzip:
                     return True
         return False
 
-    def check_includes(self, path: PathLike) -> bool:
+    def check_includes(self, path: StrPath) -> bool:
         path = PathExt(path)
         for include in self.includes:
             if isinstance(include, re.Pattern):
@@ -163,7 +163,7 @@ class Unzip:
 
 
 def is_image_sequence(
-    path: PathLike, *, allowed_extension: Optional[str] = None
+    path: StrPath, *, allowed_extension: Optional[str] = None
 ) -> bool:
     """validate image seuqnece file
     {sequence number}.{extension} or {filename}_{sequence number}.{extension}
@@ -193,7 +193,7 @@ def is_image_sequence(
         return bool(re.fullmatch(fr"^(.*_)?(\d+)\.({allowed_extension})$", path.name))
 
 
-def is_dot_file(path: PathLike) -> bool:
+def is_dot_file(path: StrPath) -> bool:
     """validate a dot file (like a system file)
     :examples:
         >>> is_dot_file("path/to/.hello.png")

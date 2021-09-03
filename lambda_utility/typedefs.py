@@ -1,16 +1,14 @@
-from __future__ import annotations
-
 __all__ = (
-    "PathLike",
+    "StrPath",
     "CognitoIdentity",
     "ClientContext",
     "LambdaContext",
 )
 
-import pathlib
+import os
 from typing import Union, Protocol, Optional
 
-PathLike = Union[str, pathlib.PurePath]
+StrPath = Union[str, os.PathLike[str]]
 
 
 class CognitoIdentity(Protocol):
@@ -36,8 +34,8 @@ class LambdaContext(Protocol):
     aws_request_id: str
     log_group_name: str
     log_stream_name: str
-    identity: CognitoIdentity
-    client_context: Optional[ClientContext]
+    identity: CognitoIdentity  # mobile apps
+    client_context: Optional[ClientContext]  # mobile apps
 
     def get_remaining_time_in_millis(self) -> int:
         ...

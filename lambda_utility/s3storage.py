@@ -27,7 +27,7 @@ from lambda_utility.schema import (
     S3HeadObjectResponse,
 )
 from lambda_utility.session import create_client
-from lambda_utility.typedefs import PathLike
+from lambda_utility.typedefs import StrPath
 
 KB = 1024
 DEFAULT_CHUNK_SIZE = 64 * KB
@@ -55,7 +55,7 @@ def _stringfy_metadata(metadata: dict) -> dict[str, str]:
 
 async def download_object(
     bucket: str,
-    key: PathLike,
+    key: StrPath,
     *,
     client: Optional[aiobotocore.session.ClientCreatorContext] = None,
     config: Optional[botocore.client.Config] = None,
@@ -82,8 +82,8 @@ async def download_object(
 
 async def download_file(
     bucket: str,
-    key: PathLike,
-    filename: PathLike,
+    key: StrPath,
+    filename: StrPath,
     *,
     client: Optional[aiobotocore.session.ClientCreatorContext] = None,
     config: Optional[botocore.client.Config] = None,
@@ -126,7 +126,7 @@ ACLType = Literal[
 
 async def upload_object(
     bucket: str,
-    key: PathLike,
+    key: StrPath,
     body: Union[bytes, BinaryIO],
     *,
     acl: ACLType = "private",
@@ -166,8 +166,8 @@ async def upload_object(
 
 async def upload_file(
     bucket: str,
-    key: PathLike,
-    filepath: PathLike,
+    key: StrPath,
+    filepath: StrPath,
     *,
     acl: ACLType = "private",
     content_type: str = DEFAULT_CONTENT_TYPE,
@@ -195,7 +195,7 @@ async def upload_file(
 
 async def fetch_head(
     bucket: str,
-    key: PathLike,
+    key: StrPath,
     *,
     client: Optional[aiobotocore.session.ClientCreatorContext] = None,
     config: Optional[botocore.client.Config] = None,
@@ -216,7 +216,7 @@ async def fetch_head(
 @contextlib.asynccontextmanager
 async def ctx_download_file(
     bucket: str,
-    key: PathLike,
+    key: StrPath,
     *,
     client: Optional[aiobotocore.session.ClientCreatorContext] = None,
     config: Optional[botocore.client.Config] = None,

@@ -36,7 +36,7 @@ import pydantic
 import pydantic.generics
 
 from lambda_utility.path import PathExt
-from lambda_utility.typedefs import PathLike
+from lambda_utility.typedefs import StrPath
 
 
 def camelize(s: str) -> str:
@@ -155,7 +155,7 @@ class PathExtField(PathExt):
         yield cls.validate
 
     @classmethod
-    def validate(cls, v: PathLike) -> Any:
+    def validate(cls, v: StrPath) -> Any:
         if not isinstance(v, (str, pathlib.PurePath)):
             raise TypeError("pathlike required")
 
