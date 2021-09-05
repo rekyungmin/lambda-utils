@@ -27,7 +27,7 @@ StorageClass = Literal[
     "OUTPOSTS",
 ]
 ACL = Literal[
-    "private",
+    "private",  # default
     "public-read",
     "public-read-write",
     "authenticated-read",
