@@ -15,7 +15,7 @@ import time
 import traceback
 from typing import TypeVar, Any, cast, Optional, Callable, Literal
 
-from lambda_utility.typedefs import LambdaContext
+from lambda_utility.types.aws_lambda import LambdaContext
 
 
 @contextlib.contextmanager

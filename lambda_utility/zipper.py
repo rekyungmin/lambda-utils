@@ -15,7 +15,7 @@ from types import TracebackType
 from typing import Optional, Type, Union, BinaryIO, Iterable, Callable
 
 from lambda_utility.path import PathExt
-from lambda_utility.typedefs import StrPath
+from lambda_utility.types.common import StrPath
 
 
 class Unzip:

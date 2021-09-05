@@ -36,7 +36,7 @@ import pydantic
 import pydantic.generics
 
 from lambda_utility.path import PathExt
-from lambda_utility.typedefs import StrPath
+from lambda_utility.types.common import StrPath
 
 
 def camelize(s: str) -> str:
@@ -307,7 +307,7 @@ class S3Object(BaseSchema):
 
 
 class ImageMeta(pydantic.BaseModel):
-    """ for KW """
+    """for KW"""
 
     alpha: BoolString
     width: str = pydantic.Field("0", regex=r"^[0-9]+$")
@@ -321,7 +321,7 @@ class ImageMeta(pydantic.BaseModel):
 
 
 class PostProcessing(pydantic.BaseModel):
-    """ for KW """
+    """for KW"""
 
     type: UpperString
     output: S3Object

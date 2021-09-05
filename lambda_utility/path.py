@@ -8,7 +8,7 @@ __all__ = (
 import collections
 import pathlib
 
-from lambda_utility.typedefs import StrPath
+from lambda_utility.types.common import StrPath
 
 
 class PathExt(pathlib.PosixPath):

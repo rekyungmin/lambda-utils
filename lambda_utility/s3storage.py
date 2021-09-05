@@ -27,7 +27,7 @@ from lambda_utility.schema import (
     S3HeadObjectResponse,
 )
 from lambda_utility.session import create_client
-from lambda_utility.typedefs import StrPath
+from lambda_utility.types.common import StrPath
 
 KB = 1024
 DEFAULT_CHUNK_SIZE = 64 * KB
@@ -62,7 +62,7 @@ async def download_object(
     **kwargs: Any,
 ) -> S3GetObjectResponse:
     """
-    ref: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.get_object
+    ref: https://boto3.a mazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.get_object
     """
     if client is None:
         client = create_client("s3", config=config)
