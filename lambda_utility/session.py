@@ -3,6 +3,7 @@ __all__ = ("Session",)
 from typing import Optional, Union, Any
 
 from aiobotocore.config import AioConfig
+from aiobotocore.credentials import AioCredentials
 from aiobotocore.session import ClientCreatorContext, get_session, AioSession
 
 from lambda_utility.types.aws_config import Config
@@ -26,6 +27,7 @@ class Session:
         :param region_name: 새 커넥션을 만들 때 default region
         :param profile_name: 사용할 profile name.
             `None`일 경우 default profile이 사용된다.
+            공유 자격 증명 파일의 기본 위치: `~/.aws/credentials`
         """
         self._aio_session: AioSession = get_session()
         if aws_access_key_id or aws_secret_access_key or aws_session_token:
@@ -46,14 +48,26 @@ class Session:
         """AioSession 객체에 직접 접근 (readonly)"""
         return self._aio_session
 
-    async def get_credentials(self) -> dict[str, Optional[str]]:
-        """AWS 자격 증명 정보를 가져온다."""
-        credentials = await self.aio_session.get_credentials()
-        return {
-            "aws_access_key_id": credentials.access_key,
-            "aws_secret_access_key": credentials.secret_key,
-            "aws_session_token": credentials.token,
-        }
+    @property
+    def profile_name(self) -> str:
+        """프로필 이름(readonly)"""
+        return self.aio_session.profile or "default"
+
+    @property
+    def region_name(self) -> str:
+        """리전 이름(readonly)"""
+        return self.aio_session.get_config_variable("region")
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(region_name={self.region_name}, profile_name={self.profile_name})"
+
+    async def get_credentials(self) -> Optional[AioCredentials]:
+        """AWS 자격 증명 정보를 가져온다.
+
+        자격 증명을 아직 로딩되지 않았다면 로딩을 수행한다.
+        이미 로딩된 경우 캐시된 자격 증명이 반환된다.
+        """
+        return await self.aio_session.get_credentials()
 
     def create_client(
         self,
@@ -67,7 +81,7 @@ class Session:
         aws_secret_access_key: Optional[str] = None,
         aws_session_token: Optional[str] = None,
         config: Optional[Union[AioConfig, Config]] = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> ClientCreatorContext:
         """aiobotocore 클라이언트 객체를 생성한다.
 
